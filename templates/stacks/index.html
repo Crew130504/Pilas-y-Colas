@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Data Structures: Stacks{% endblock %}
+
+{% block content %}
+  <header>
+    <h1>Symbol Validator with Stacks</h1>
+    <p class="subtitle">Checks opening and closing symbols while following stack order.</p>
+  </header>
+
+  <section class="card">
+    <form method="post">
+      <label for="text"><strong>Text to analyze</strong></label>
+      <textarea id="text" name="text" placeholder="Example: { [ (text) ] }">{{ text }}</textarea>
+      <button type="submit">Validate with stack</button>
+    </form>
+  </section>
+
+  {% if result is not none %}
+    <section class="card result {{ 'success' if result.is_valid else 'failure' }}">
+      <h2>{{ '✓ Valid text' if result.is_valid else '✕ Invalid text' }}</h2>
+      <p>{{ result.message }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Stack trace</h2>
+      <p class="subtitle">Each card is the stack after a relevant character is processed. The top is always shown first.</p>
+
+      {% if result.steps %}
+        <div class="steps-grid">
+          {% for step in result.steps %}
+            <article class="step-card">
+              <p class="step-description">
+                <strong>Step {{ loop.index }} · position {{ step.position }}</strong>
+                {{ step.action }}
+              </p>
+              <div class="stack-visualizer">
+                {% if step.stack %}
+                  <div class="stack-tower" aria-label="Stack with top on top">
+                    {% for item in step.stack|reverse %}
+                      <div class="stack-block {{ 'top-block' if loop.first else '' }}">
+                        {{ item }}
+                        {% if loop.first %}<span class="top-label">Top</span>{% endif %}
+                      </div>
+                    {% endfor %}
+                    <div class="stack-base" title="Stack base"></div>
+                  </div>
+                {% else %}
+                  <span class="empty-stack">∅<br>Empty stack</span>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="subtitle">There are no symbols to process.</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <p class="supported-pairs">Supported pairs: <code>() [] {} &lt;&gt; “ ” ‘ ’ ¿? ¡!</code>. Straight quotes alternate between opening and closing.</p>
+{% endblock %}

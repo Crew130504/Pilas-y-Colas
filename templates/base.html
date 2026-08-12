@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Data Structures{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page-container">
+      <nav class="navigation" aria-label="Main navigation">
+        <a class="{{ 'active' if request.blueprint == 'stacks' else '' }}" href="{{ url_for('stacks.stacks_page') }}">Stacks</a>
+        <a class="{{ 'active' if request.blueprint == 'queues' else '' }}" href="{{ url_for('queues.queues_page') }}">Queues</a>
+      </nav>
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
