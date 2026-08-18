@@ -63,6 +63,46 @@
 
 </section>
 
+<!-- ============================= -->
+<!-- AGREGAR TAREAS EN LOTE -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Add Tasks in Batch</h2>
+
+  <p class="subtitle">
+    Enter one task per line using the format: task name,execution time.
+  </p>
+
+  <form method="post">
+
+    <input
+      type="hidden"
+      name="action"
+      value="add_bulk"
+    >
+
+    <label for="tasks_bulk">
+      <strong>Tasks</strong>
+    </label>
+
+    <textarea
+      id="tasks_bulk"
+      name="tasks_bulk"
+      rows="6"
+      placeholder="Task 1,5&#10;Task 2,10&#10;Task 3,2"
+      required
+    ></textarea>
+
+    <button type="submit">
+      Add tasks to queue
+    </button>
+
+  </form>
+
+</section>
+
 
 <!-- ============================= -->
 <!-- MENSAJE -->

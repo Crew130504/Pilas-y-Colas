@@ -38,6 +38,39 @@ def add_task(name: str, duration: int):
     next_task_id += 1
 
 
+def add_tasks_batch(tasks_text: str) -> int:
+    """Add tasks from ``name,duration`` lines, preserving their input order."""
+    parsed_tasks: list[tuple[str, int]] = []
+
+    for line_number, line in enumerate(tasks_text.splitlines(), start=1):
+        line = line.strip()
+        if not line:
+            continue
+
+        try:
+            name, duration_text = (part.strip() for part in line.rsplit(",", 1))
+            duration = int(duration_text)
+        except ValueError as error:
+            raise ValueError(
+                f"Línea {line_number}: use el formato nombre,duración."
+            ) from error
+
+        if not name or duration <= 0:
+            raise ValueError(
+                f"Línea {line_number}: el nombre es obligatorio y la duración debe ser mayor que cero."
+            )
+
+        parsed_tasks.append((name, duration))
+
+    if not parsed_tasks:
+        raise ValueError("Ingrese al menos una tarea con el formato nombre,duración.")
+
+    for name, duration in parsed_tasks:
+        add_task(name, duration)
+
+    return len(parsed_tasks)
+
+
 def remove_task():
     """
     Elimina la primera tarea de la cola.
@@ -142,6 +175,21 @@ def queues_page():
                         "mayor que cero."
                     )
                     message_type = "failure"
+
+        # -----------------------------------
+        # AGREGAR TAREAS EN LOTE
+        # -----------------------------------
+        elif action == "add_bulk":
+
+            tasks_text = request.form.get("tasks_bulk", "")
+
+            try:
+                added_count = add_tasks_batch(tasks_text)
+                message = f"Se agregaron {added_count} tarea(s) correctamente a la cola."
+                message_type = "success"
+            except ValueError as error:
+                message = str(error)
+                message_type = "failure"
 
         # -----------------------------------
         # ELIMINAR TAREA
