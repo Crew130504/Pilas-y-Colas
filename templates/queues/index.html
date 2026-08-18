@@ -3,9 +3,353 @@
 {% block title %}Data Structures: Queues{% endblock %}
 
 {% block content %}
-  <section class="card queue-placeholder">
-    <h1>Queues Module</h1>
-    <p>This module is ready for the queue implementation.</p>
-    <p>Queue-specific routes and logic belong in <code>Colas/routes.py</code>.</p>
-  </section>
+
+<header>
+  <h1>Task Scheduling with Queues</h1>
+
+  <p class="subtitle">
+    Organizes tasks in a queue and distributes them among processors
+    to minimize completion time.
+  </p>
+</header>
+
+
+<!-- ============================= -->
+<!-- AGREGAR TAREA -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Add Task</h2>
+
+  <form method="post">
+
+    <input
+      type="hidden"
+      name="action"
+      value="add"
+    >
+
+    <label for="name">
+      <strong>Task name</strong>
+    </label>
+
+    <input
+      type="text"
+      id="name"
+      name="name"
+      placeholder="Example: Task 1"
+      required
+    >
+
+    <label for="duration">
+      <strong>Execution time</strong>
+    </label>
+
+    <input
+      type="number"
+      id="duration"
+      name="duration"
+      min="1"
+      placeholder="Example: 5"
+      required
+    >
+
+    <button type="submit">
+      Add task to queue
+    </button>
+
+  </form>
+
+</section>
+
+
+<!-- ============================= -->
+<!-- MENSAJE -->
+<!-- ============================= -->
+
+{% if message %}
+
+<section class="card result {{ message_type }}">
+
+  <p>
+    {{ message }}
+  </p>
+
+</section>
+
+{% endif %}
+
+
+<!-- ============================= -->
+<!-- COLA -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Current Queue</h2>
+
+  <p class="subtitle">
+    Tasks are added to the end of the queue and removed
+    from the beginning.
+  </p>
+
+
+  {% if tasks %}
+
+    <div class="queue-visualizer">
+
+      {% for task in tasks %}
+
+        <article class="queue-item">
+
+          <span class="queue-position">
+            {{ loop.index }}
+          </span>
+
+          <div>
+            <strong>{{ task.name }}</strong>
+
+            <p>
+              Execution time:
+              <strong>{{ task.duration }}</strong>
+            </p>
+          </div>
+
+        </article>
+
+        {% if not loop.last %}
+          <div class="queue-arrow">
+            →
+          </div>
+        {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+
+    <p class="subtitle">
+      The queue is empty.
+    </p>
+
+  {% endif %}
+
+</section>
+
+
+<!-- ============================= -->
+<!-- ELIMINAR -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Queue Operations</h2>
+
+  <form method="post">
+
+    <button
+      type="submit"
+      name="action"
+      value="remove"
+    >
+      Remove first task
+    </button>
+
+  </form>
+
+</section>
+
+
+<!-- ============================= -->
+<!-- PROCESADORES -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Process Tasks</h2>
+
+  <p class="subtitle">
+    Select the number of processors that will execute the tasks.
+  </p>
+
+  <form method="post">
+
+    <input
+      type="hidden"
+      name="action"
+      value="process"
+    >
+
+    <label for="processors">
+      <strong>Number of processors</strong>
+    </label>
+
+    <input
+      type="number"
+      id="processors"
+      name="processors"
+      min="1"
+      value="2"
+      required
+    >
+
+    <button type="submit">
+      Process tasks
+    </button>
+
+  </form>
+
+</section>
+
+
+<!-- ============================= -->
+<!-- RESULTADOS -->
+<!-- ============================= -->
+
+{% if results is not none %}
+
+<section class="card">
+
+  <h2>Scheduling Result</h2>
+
+  <p class="subtitle">
+    Tasks are assigned starting with the shortest execution time
+    to the processor that becomes available first.
+  </p>
+
+
+  <div class="steps-grid">
+
+    {% for result in results %}
+
+      <article class="step-card">
+
+        <p class="step-description">
+
+          <strong>
+            Task {{ result.task.name }}
+          </strong>
+
+        </p>
+
+        <p>
+          Processor:
+          <strong>
+            {{ result.processor }}
+          </strong>
+        </p>
+
+        <p>
+          Execution time:
+          <strong>
+            {{ result.task.duration }}
+          </strong>
+        </p>
+
+        <p>
+          Start time:
+          <strong>
+            {{ result.start }}
+          </strong>
+          </p>
+
+        <p>
+          Completion time:
+          <strong>
+            {{ result.finish }}
+          </strong>
+        </p>
+
+      </article>
+
+    {% endfor %}
+
+  </div>
+
+</section>
+
+
+<!-- ============================= -->
+<!-- TABLA -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <h2>Execution Schedule</h2>
+
+  <table>
+
+    <thead>
+
+      <tr>
+        <th>Task</th>
+        <th>Processor</th>
+        <th>Duration</th>
+        <th>Start</th>
+        <th>Finish</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      {% for result in results %}
+
+        <tr>
+
+          <td>
+            {{ result.task.name }}
+          </td>
+
+          <td>
+            P{{ result.processor }}
+          </td>
+
+          <td>
+            {{ result.task.duration }}
+          </td>
+
+          <td>
+            {{ result.start }}
+          </td>
+
+          <td>
+            {{ result.finish }}
+          </td>
+
+        </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+
+</section>
+
+{% endif %}
+
+
+<!-- ============================= -->
+<!-- SALIR -->
+<!-- ============================= -->
+
+<section class="card">
+
+  <form method="post">
+
+    <button
+      type="submit"
+      name="action"
+      value="exit"
+    >
+      Exit / Clear Queue
+    </button>
+
+  </form>
+
+</section>
+
 {% endblock %}
